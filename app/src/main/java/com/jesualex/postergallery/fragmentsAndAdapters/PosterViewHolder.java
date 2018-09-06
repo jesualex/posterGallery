@@ -16,7 +16,6 @@ import butterknife.ButterKnife;
  */
 class PosterViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.posterImage) ImageView posterImage;
-    @BindView(R.id.posterTitle) TextView posterTitle;
 
     View view;
 

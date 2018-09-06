@@ -3,6 +3,8 @@ package com.jesualex.postergallery;
 import android.app.Application;
 import android.content.Context;
 
+import com.jesualex.postergallery.database.entitys.MyObjectBox;
+
 import io.objectbox.BoxStore;
 
 /**
@@ -17,7 +19,7 @@ public class App extends Application{
         super.onCreate();
         context = this;
 
-        //boxStoreInstance = MyObjectBox.builder().androidContext(App.this).build();
+        boxStoreInstance = MyObjectBox.builder().androidContext(App.this).build();
     }
 
     public static BoxStore getBoxStoreInstance(){

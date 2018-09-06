@@ -165,4 +165,8 @@ public class Movie {
     public void setRelease_date(Date release_date) {
         this.release_date = release_date;
     }
+
+    @Override public boolean equals(Object o) {
+        return getClass().isInstance(o) && id == getClass().cast(o).getId();
+    }
 }

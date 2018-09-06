@@ -1,12 +1,18 @@
 package com.jesualex.postergallery.utils;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.jesualex.postergallery.R;
 import com.jesualex.postergallery.database.entitys.Movie;
 import com.jesualex.postergallery.database.entitys.Response;
+import com.jesualex.postergallery.interfaces.MoviesCallback;
+import com.jesualex.postergallery.interfaces.PosterCallback;
 import com.jesualex.postergallery.interfaces.RetrofitClient;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -34,14 +40,15 @@ public class RetrofitUtils {
 
     public static void getMovies(
             @NonNull final String orderBy,
-            @NonNull final String apiKey
+            @NonNull final String apiKey,
+            @Nullable MoviesCallback callback
     ){
         Call<Response<Movie>> call = getRetrofitInstance().getMovies(orderBy, apiKey);
 
         call.enqueue(new Callback<Response<Movie>>() {
-            @Override
-            public void onResponse(@NonNull Call<Response<Movie>> call,
-                                   @NonNull retrofit2.Response<Response<Movie>> response) {
+            @Override public void onResponse(@NonNull Call<Response<Movie>> call,
+                                   @NonNull retrofit2.Response<Response<Movie>> response
+            ) {
                 if(!response.isSuccessful() || response.body() == null){
                     switch (response.code()) {
                         case 401:
@@ -52,15 +59,21 @@ public class RetrofitUtils {
                             GeneralUtils.showToast(R.string.api_bad_response);
                             break;
                     }
+
+                    if(callback != null)
+                        callback.OnPostersLoadFinish(null);
                 }else{
-                    response.body().getResults();
+                    if(callback != null && response.body() != null)
+                        callback.OnPostersLoadFinish(response.body().getResults());
                 }
             }
 
-            @Override
-            public void onFailure(@NonNull Call<Response<Movie>> call, @NonNull Throwable t) {
+            @Override public void onFailure(@NonNull Call<Response<Movie>> call, @NonNull Throwable t) {
                 Log.e("error", t.toString());
                 GeneralUtils.showToast(R.string.api_bad_response);
+
+                if(callback != null)
+                    callback.OnPostersLoadFinish(null);
             }
         });
     }

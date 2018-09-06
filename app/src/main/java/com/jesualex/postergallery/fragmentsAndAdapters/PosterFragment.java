@@ -1,83 +1,68 @@
 package com.jesualex.postergallery.fragmentsAndAdapters;
 
-import android.content.Context;
+import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.transition.TransitionInflater;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.jesualex.postergallery.R;
+import com.jesualex.postergallery.activitys.MovieDetailsActivity;
+import com.jesualex.postergallery.database.viewModels.MovieViewModel;
 
 
 public class PosterFragment extends Fragment {
 
     private static final String ARG_COLUMN_COUNT = "column-count";
-    private int mColumnCount = 3;
-    //private OnListFragmentInteractionListener mListener;
+    private int columnCount = 3;
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
-    public PosterFragment() {
-    }
+    public PosterFragment() { }
 
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
-    public static PosterFragment newInstance(int columnCount) {
-        PosterFragment fragment = new PosterFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
+    @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
+            columnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_poster_list, container, false);
-
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
         // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
+        if (view instanceof RecyclerView && activity != null) {
             RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
 
-            //recyclerView.setAdapter(new MyPosterRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            recyclerView.setLayoutManager(new GridLayoutManager(activity, columnCount));
+
+            PosterRecyclerViewAdapter posterRecyclerViewAdapter =  new PosterRecyclerViewAdapter((movie, poster) -> {
+                Intent intent = MovieDetailsActivity.getIntent(activity, movie.getId());
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    ActivityOptionsCompat options = ActivityOptionsCompat.
+                            makeSceneTransitionAnimation(activity, poster, getString(R.string.posterTransitionName));
+                    startActivity(intent, options.toBundle());
+                }
+                else {
+                    startActivity(intent);
+                }
+            });
+
+            recyclerView.setAdapter(posterRecyclerViewAdapter);
+
+            MovieViewModel movieViewModel = ViewModelProviders.of(this).get(MovieViewModel.class);
+
+            movieViewModel.getAllMovies().observe(this, posterRecyclerViewAdapter::updateItems);
         }
         return view;
-    }
-
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-/*        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
-        } else {
-        }*/
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        //mListener = null;
     }
 }

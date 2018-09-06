@@ -1,7 +1,11 @@
 <resources>
     <string name="app_name">posterGallery</string>
     <string name="poster">poster</string>
+    <string name="posterTransitionName">posterImage</string>
 
     <string name="no_auth">Ups.. no tienes permiso de acceder a este recurso.</string>
     <string name="api_bad_response">Hubo un problema intentando conectar con nuestros servidores, intentalo nuevamente en unos minutos por favor.</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

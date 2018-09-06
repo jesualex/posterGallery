@@ -7,19 +7,25 @@ import android.view.ViewGroup;
 
 import com.jesualex.postergallery.R;
 import com.jesualex.postergallery.database.entitys.Movie;
+import com.jesualex.postergallery.interfaces.PosterCallback;
 import com.jesualex.postergallery.utils.Constants;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class MyPosterRecyclerViewAdapter extends RecyclerView.Adapter<PosterViewHolder> {
+public class PosterRecyclerViewAdapter extends RecyclerView.Adapter<PosterViewHolder> {
+    private PosterCallback callback;
 
-    private final List<Movie> movies;
-    //private final OnListFragmentInteractionListener mListener;
+    private List<Movie> movies = new ArrayList<>();
 
-    public MyPosterRecyclerViewAdapter(List<Movie> items) {
-        movies = items;
-        //mListener = listener;
+    PosterRecyclerViewAdapter(PosterCallback callback){
+        this.callback = callback;
+    }
+
+    public void updateItems(List<Movie> movies){
+        this.movies = movies;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -35,9 +41,9 @@ public class MyPosterRecyclerViewAdapter extends RecyclerView.Adapter<PosterView
         Picasso.get().load(Constants.POSTER_URL + movie.getPoster_path()).into(holder.posterImage);
 
         holder.view.setOnClickListener( v -> {
-/*            if (null != mListener) {
-                mListener.onListFragmentInteraction(holder.mItem);
-            }*/
+            if (callback != null) {
+                callback.OnPosterClick(movie, holder.posterImage);
+            }
         });
     }
 

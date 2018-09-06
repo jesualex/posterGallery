@@ -1,10 +1,14 @@
 package com.jesualex.postergallery.utils;
 
+import android.text.TextUtils;
+
 import java.io.IOException;
+import java.util.Arrays;
 
 import io.objectbox.converter.PropertyConverter;
 import okio.Buffer;
 import okio.ByteString;
+
 
 /**
  * Created by jesualex
@@ -12,40 +16,32 @@ import okio.ByteString;
  */
 
 public class LongArrayConverter implements PropertyConverter<long[], String> {
-    private static final ByteString SEMICOLON = ByteString.decodeBase64(";");
+    @Override
+    public long[] convertToEntityProperty(String s) {
+        if (TextUtils.isEmpty(s))
+            return null;
+        else{
+            String[] stringArray = s.split(",");
+            long[] longArray = new long[stringArray.length];
 
-    public long[] add(long id, long[] values) {
-        long[] anotherArray = new long[values.length + 1];
-        System.arraycopy(values, 0, anotherArray, 0, values.length);
-        anotherArray[values.length] = id;
-        return anotherArray;
-    }
-
-    @Override public long[] convertToEntityProperty(String databaseValue) {
-        if (databaseValue == null) {
-            return new long[0];
-        }
-        try {
-            long[] ids = new long[0];
-            Buffer buffer = new Buffer();
-            buffer.writeUtf8(databaseValue);
-            long index;
-            while ((index = buffer.indexOf(SEMICOLON)) != -1) {
-                ids = add(Long.parseLong(buffer.readUtf8(index - 1)), ids);
+            for (int i = 0; i < stringArray.length; i++) {
+                longArray[i] = Long.parseLong(stringArray[i]);
             }
-            return ids;
-        } catch (IOException io) {
-            io.printStackTrace();
-            return new long[0];
+
+            return longArray;
         }
     }
 
-    @Override public String convertToDatabaseValue(long[] entityProperty) {
-        Buffer buffer = new Buffer();
-        for (long value : entityProperty) {
-            buffer.write(SEMICOLON);
-            buffer.writeUtf8(String.valueOf(value));
+    @Override
+    public String convertToDatabaseValue(long[] array) {
+        if (array != null && array.length > 0) {
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < array.length; i++) {
+                if (i > 0) builder.append(",");
+                builder.append(array[i]);
+            }
+            return builder.toString();
         }
-        return buffer.toString();
+        return null;
     }
 }
