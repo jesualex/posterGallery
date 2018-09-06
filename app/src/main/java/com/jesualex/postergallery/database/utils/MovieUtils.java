@@ -30,15 +30,8 @@ public class MovieUtils {
         return queryAll;
     }
 
-    public static void updateByPopular(){
-        RetrofitUtils.getMovies(POPULAR_KEY, Constants.DEFAULT_API_KEY, movies -> {
-            box.removeAll();
-            box.put(movies);
-        });
-    }
-
-    public static void updateByTopRated(){
-        RetrofitUtils.getMovies(TOP_RATED_KEY, Constants.DEFAULT_API_KEY, movies -> {
+    public static void updateBy(String key){
+        RetrofitUtils.getMovies(key, Constants.DEFAULT_API_KEY, movies -> {
             box.removeAll();
             box.put(movies);
         });
@@ -46,5 +39,9 @@ public class MovieUtils {
 
     public static @Nullable Movie get(long id){
         return id > 0 || id < -1 ? box.get(id) : null;
+    }
+
+    public static String[] getOrderByArray(){
+        return new String[]{POPULAR_KEY, TOP_RATED_KEY};
     }
 }

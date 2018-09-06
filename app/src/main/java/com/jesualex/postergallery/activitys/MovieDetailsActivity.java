@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,6 +24,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
     @BindView(R.id.posterImage) ImageView posterImage;
     @BindView(R.id.movieDescription) TextView movieDescription;
     @BindView(R.id.movieTitle) TextView movieTitle;
+    @BindView(R.id.toolbar) Toolbar toolbar;
 
     public static Intent getIntent(Activity activity, long movieId){
         Intent intent = new Intent(activity, MovieDetailsActivity.class);
@@ -42,6 +44,10 @@ public class MovieDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_movie_details);
 
         ButterKnife.bind(this);
+        setSupportActionBar(toolbar);
+
+        if(getSupportActionBar() != null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             posterImage.setTransitionName(getString(R.string.posterTransitionName));
@@ -51,5 +57,10 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
         movieTitle.setText(movie.getTitle());
         movieDescription.setText(movie.getOverview());
+    }
+
+    @Override public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }

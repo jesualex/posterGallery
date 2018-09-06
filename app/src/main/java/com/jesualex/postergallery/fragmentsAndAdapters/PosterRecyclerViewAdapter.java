@@ -20,6 +20,7 @@ public class PosterRecyclerViewAdapter extends RecyclerView.Adapter<PosterViewHo
     private List<Movie> movies = new ArrayList<>();
 
     PosterRecyclerViewAdapter(PosterCallback callback){
+        setHasStableIds(true);
         this.callback = callback;
     }
 
@@ -28,15 +29,17 @@ public class PosterRecyclerViewAdapter extends RecyclerView.Adapter<PosterViewHo
         notifyDataSetChanged();
     }
 
-    @Override
-    public PosterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    @Override public long getItemId(int position) {
+        return movies.get(position).getId();
+    }
+
+    @Override public PosterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.fragment_poster, parent, false);
         return new PosterViewHolder(view);
     }
 
-    @Override
-    public void onBindViewHolder(final PosterViewHolder holder, int position) {
+    @Override public void onBindViewHolder(final PosterViewHolder holder, int position) {
         Movie movie = movies.get(position);
         Picasso.get().load(Constants.POSTER_URL + movie.getPoster_path()).into(holder.posterImage);
 
@@ -47,8 +50,7 @@ public class PosterRecyclerViewAdapter extends RecyclerView.Adapter<PosterViewHo
         });
     }
 
-    @Override
-    public int getItemCount() {
+    @Override public int getItemCount() {
         return movies.size();
     }
 }
